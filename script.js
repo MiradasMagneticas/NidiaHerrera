@@ -116,18 +116,15 @@ const featuredItems = [
 const pageVideos = [
   {
     src: "videos/recargar-baterias.mp4",
-    caption: "Un día especial para recargar baterías",
-    placement: "after-about",
+    caption: "Recarga baterías",
   },
   {
     src: "videos/piel-emocion.mp4",
-    caption: "Que tu piel refleje la emoción de tu ser",
-    placement: "services-mid",
+    caption: "Tu piel, tu emoción",
   },
   {
     src: "videos/extraordinario-maravilloso.mp4",
-    caption: "Extraordinario y maravilloso",
-    placement: "before-gallery",
+    caption: "Extraordinario",
   },
 ];
 
@@ -152,9 +149,9 @@ function renderWhatsAppButton(nombre, duracion, compact) {
   return `<a href="${whatsappLink(nombre, duracion === "combo" ? null : duracion)}" class="btn btn--whatsapp${sizeClass}" target="_blank" rel="noopener noreferrer">${whatsappIcon}${label}</a>`;
 }
 
-function renderVideoFrame(video, variant = "") {
+function renderVideoFrame(video) {
   return `
-    <article class="video-frame reveal ${variant}">
+    <article class="video-frame reveal">
       <div class="video-frame__media">
         <video muted loop playsinline preload="metadata" aria-label="${video.caption}">
           <source src="${video.src}" type="video/mp4">
@@ -169,13 +166,9 @@ function renderVideoFrame(video, variant = "") {
 }
 
 function renderPageVideos() {
-  pageVideos.forEach((video) => {
-    const target = document.querySelector(`[data-video="${video.placement}"]`);
-    if (target) {
-      const variant = video.placement === "before-gallery" ? "video-frame--wide" : "";
-      target.innerHTML = renderVideoFrame(video, variant);
-    }
-  });
+  const container = document.getElementById("videos-grid");
+  if (!container) return;
+  container.innerHTML = pageVideos.map((video) => renderVideoFrame(video)).join("");
 }
 
 function renderFeaturedCards() {
@@ -186,9 +179,7 @@ function renderFeaturedCards() {
     .map((item) => {
       const img = item.imagen || serviceImages[item.nombre] || "images/spa-facial.png";
       const cat = categoryLabels[item.categoria] || item.categoria;
-      const desc = item.descripcion || item.incluye || "";
       const durationLabel = item.duracion === "combo" ? "Combo" : item.duracion;
-      const incluye = item.incluye ? `<p class="featured-card__includes">${item.incluye}</p>` : "";
 
       return `
         <article class="featured-card reveal">
@@ -196,13 +187,11 @@ function renderFeaturedCards() {
             <img src="${img}" alt="${item.nombre}" loading="lazy">
           </div>
           <div class="featured-card__body">
-            <div class="featured-card__top">
+            <div class="featured-card__main">
               <p class="featured-card__category">${cat}</p>
+              <h3 class="featured-card__name">${item.nombre}</h3>
               <span class="featured-card__duration">${durationLabel}</span>
             </div>
-            <h3 class="featured-card__name">${item.nombre}</h3>
-            <p class="featured-card__desc">${desc}</p>
-            ${incluye}
             <div class="featured-card__footer">
               <span class="featured-card__price">${formatPrice(item.precio)}</span>
               ${renderWhatsAppButton(item.nombre, item.duracion, true)}
