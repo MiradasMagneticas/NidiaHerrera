@@ -17,6 +17,9 @@ function formatPrice(price) {
 }
 
 const serviceImages = {
+  "Combo Glow": "images/combo-glow.png",
+  "Facial Mantenimiento": "images/facial-mantenimiento.png",
+  "Extensiones de pestañas": "images/extensiones-pestanas.png",
   "Drenaje linfático": "images/drenaje-linfatico.png",
   "Higiene de Espalda": "images/higiene-espalda.png",
   "Malaxación Colónica": "images/malaxacion-colonica.png",
@@ -35,7 +38,7 @@ const services = [
   { categoria: "belleza", nombre: "Depilación con hilo en rostro", duracion: "30 min", precio: 50000 },
   { categoria: "belleza", nombre: "Depilación facial con cera x zona", duracion: "20 min", precio: 15000 },
   { categoria: "belleza", nombre: "Diseño de Cejas con hilo", duracion: "30 min", precio: 25000 },
-  { categoria: "belleza", nombre: "Extensiones de pestañas", duracion: "120 min", precio: 120000, destacado: true, descripcion: "Pestañas voluminosas y naturales para realzar tu mirada con un acabado impecable." },
+  { categoria: "belleza", nombre: "Extensiones de pestañas", duracion: "120 min", precio: 120000, destacado: true, descripcion: "Mirada impactante con volumen natural y acabado impecable.", imagen: "images/extensiones-pestanas.png" },
   { categoria: "belleza", nombre: "Henna en cejas", duracion: "30 min", precio: 15000 },
   { categoria: "belleza", nombre: "Lifting Coreano de pestañas", duracion: "60 min", precio: 70000 },
   { categoria: "belleza", nombre: "Maquillaje Social", duracion: "60 min", precio: 50000 },
@@ -78,8 +81,8 @@ const combos = [
     duracion: "combo",
     precio: 160000,
     destacado: true,
-    descripcion: "El trio perfecto para lucir radiante: cejas definidas, piel luminosa y mirada impactante.",
-    imagen: "images/spa-facial.png",
+    descripcion: "Cejas, piel luminosa y mirada impactante en un solo ritual.",
+    imagen: "images/combo-glow.png",
   },
   {
     categoria: "combos",
@@ -88,8 +91,8 @@ const combos = [
     duracion: "combo",
     precio: 120000,
     destacado: true,
-    descripcion: "Tu rutina esencial de cuidado facial con un precio especial para clientas frecuentes.",
-    imagen: "images/spa-facial.png",
+    descripcion: "Tu rutina esencial de cuidado con precio especial.",
+    imagen: "images/facial-mantenimiento.png",
   },
 ];
 
@@ -104,8 +107,31 @@ const categories = [
 
 const categoryLabels = Object.fromEntries(categories.map((c) => [c.id, c.label]));
 
+const featuredItems = [
+  combos[0],
+  combos[1],
+  services.find((s) => s.nombre === "Extensiones de pestañas"),
+];
+
+const pageVideos = [
+  {
+    src: "videos/recargar-baterias.mp4",
+    caption: "Un día especial para recargar baterías",
+    placement: "after-about",
+  },
+  {
+    src: "videos/piel-emocion.mp4",
+    caption: "Que tu piel refleje la emoción de tu ser",
+    placement: "services-mid",
+  },
+  {
+    src: "videos/extraordinario-maravilloso.mp4",
+    caption: "Extraordinario y maravilloso",
+    placement: "before-gallery",
+  },
+];
+
 const galleryImages = [
-  { src: "images/spa-facial.png", alt: "Tratamiento facial con aceite nutritivo" },
   { src: "images/drenaje-linfatico.png", alt: "Drenaje linfático abdominal" },
   { src: "images/higiene-espalda.png", alt: "Higiene de espalda con exfoliación" },
   { src: "images/masaje-relajante.png", alt: "Masaje relajante de espalda" },
@@ -122,24 +148,47 @@ const whatsappIcon = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="
 
 function renderWhatsAppButton(nombre, duracion, compact) {
   const label = compact ? "Agendar" : "Agendar por WhatsApp";
-  return `<a href="${whatsappLink(nombre, duracion === "combo" ? null : duracion)}" class="btn btn--whatsapp" target="_blank" rel="noopener noreferrer">${whatsappIcon}${label}</a>`;
+  const sizeClass = compact ? " btn--whatsapp-sm" : "";
+  return `<a href="${whatsappLink(nombre, duracion === "combo" ? null : duracion)}" class="btn btn--whatsapp${sizeClass}" target="_blank" rel="noopener noreferrer">${whatsappIcon}${label}</a>`;
+}
+
+function renderVideoFrame(video, variant = "") {
+  return `
+    <article class="video-frame reveal ${variant}">
+      <div class="video-frame__media">
+        <video muted loop playsinline preload="metadata" aria-label="${video.caption}">
+          <source src="${video.src}" type="video/mp4">
+        </video>
+        <button class="video-frame__sound" type="button" aria-label="Activar sonido del video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7M18 6a8 8 0 010 12"/></svg>
+        </button>
+      </div>
+      <p class="video-frame__caption">${video.caption}</p>
+    </article>
+  `;
+}
+
+function renderPageVideos() {
+  pageVideos.forEach((video) => {
+    const target = document.querySelector(`[data-video="${video.placement}"]`);
+    if (target) {
+      const variant = video.placement === "before-gallery" ? "video-frame--wide" : "";
+      target.innerHTML = renderVideoFrame(video, variant);
+    }
+  });
 }
 
 function renderFeaturedCards() {
   const container = document.getElementById("featured-grid");
   if (!container) return;
 
-  const featured = [
-    ...combos,
-    ...services.filter((s) => s.destacado && !combos.find((c) => c.nombre === s.nombre)),
-  ].slice(0, 6);
-
-  container.innerHTML = featured
+  container.innerHTML = featuredItems
     .map((item) => {
       const img = item.imagen || serviceImages[item.nombre] || "images/spa-facial.png";
       const cat = categoryLabels[item.categoria] || item.categoria;
       const desc = item.descripcion || item.incluye || "";
-      const durationLabel = item.duracion === "combo" ? "Paquete promocional" : item.duracion;
+      const durationLabel = item.duracion === "combo" ? "Combo" : item.duracion;
+      const incluye = item.incluye ? `<p class="featured-card__includes">${item.incluye}</p>` : "";
 
       return `
         <article class="featured-card reveal">
@@ -147,14 +196,17 @@ function renderFeaturedCards() {
             <img src="${img}" alt="${item.nombre}" loading="lazy">
           </div>
           <div class="featured-card__body">
-            <p class="featured-card__category">${cat}</p>
-            <h3 class="featured-card__name">${item.nombre}</h3>
-            <p class="featured-card__desc">${desc}</p>
-            <div class="featured-card__meta">
-              <span class="featured-card__price">${formatPrice(item.precio)}</span>
+            <div class="featured-card__top">
+              <p class="featured-card__category">${cat}</p>
               <span class="featured-card__duration">${durationLabel}</span>
             </div>
-            ${renderWhatsAppButton(item.nombre, item.duracion)}
+            <h3 class="featured-card__name">${item.nombre}</h3>
+            <p class="featured-card__desc">${desc}</p>
+            ${incluye}
+            <div class="featured-card__footer">
+              <span class="featured-card__price">${formatPrice(item.precio)}</span>
+              ${renderWhatsAppButton(item.nombre, item.duracion, true)}
+            </div>
           </div>
         </article>
       `;
@@ -189,7 +241,7 @@ function renderServicePanels() {
           <div class="service-row combo-row reveal">
             <div class="service-row__info">
               <h4>${combo.nombre}</h4>
-              <p>Incluye: ${combo.incluye}</p>
+              <p class="service-row__includes">${combo.incluye}</p>
             </div>
             <div class="service-row__meta">
               <span>${formatPrice(combo.precio)}</span>
@@ -383,8 +435,41 @@ function initAnimations() {
   });
 }
 
+function initVideos() {
+  const frames = document.querySelectorAll(".video-frame");
+
+  frames.forEach((frame) => {
+    const video = frame.querySelector("video");
+    const soundBtn = frame.querySelector(".video-frame__sound");
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.45 }
+    );
+
+    observer.observe(frame);
+
+    if (soundBtn) {
+      soundBtn.addEventListener("click", () => {
+        video.muted = !video.muted;
+        soundBtn.classList.toggle("is-unmuted", !video.muted);
+      });
+    }
+  });
+}
+
 function init() {
   renderFeaturedCards();
+  renderPageVideos();
   renderCategoryTabs();
   renderServicePanels();
   renderGallery();
@@ -392,6 +477,7 @@ function init() {
   initMobileNav();
   initHeader();
   initWhatsAppFloat();
+  initVideos();
 
   const genericLinks = document.querySelectorAll("[data-whatsapp-generic]");
   genericLinks.forEach((link) => {
