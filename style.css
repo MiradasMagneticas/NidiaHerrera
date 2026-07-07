@@ -302,18 +302,17 @@ ul {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
 }
 
 .hero__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    105deg,
-    rgba(248, 244, 239, 0.88) 0%,
-    rgba(248, 244, 239, 0.72) 32%,
-    rgba(248, 244, 239, 0.2) 58%,
-    rgba(248, 244, 239, 0.05) 100%
+    135deg,
+    rgba(248, 244, 239, 0.92) 0%,
+    rgba(248, 244, 239, 0.75) 45%,
+    rgba(248, 244, 239, 0.55) 100%
   );
 }
 
@@ -321,7 +320,6 @@ ul {
   position: relative;
   z-index: 1;
   padding: 4rem 0 6rem;
-  max-width: 34rem;
 }
 
 .hero__tag {
@@ -823,23 +821,222 @@ ul {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --header-h: 64px;
+  }
+
+  .container {
+    width: min(1120px, 90vw);
+  }
+
+  .section-title {
+    font-size: clamp(1.75rem, 7vw, 2.25rem);
+  }
+
+  .section-intro {
+    font-size: 0.98rem;
+  }
+
+  /* Hero móvil: imagen arriba + contenido en tarjeta */
+  .hero {
+    min-height: auto;
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: var(--header-h);
+  }
+
+  .hero__bg {
+    position: relative;
+    height: clamp(240px, 44vh, 360px);
+    flex-shrink: 0;
+  }
+
   .hero__bg img {
-    object-position: 65% top;
+    object-position: center 30%;
   }
 
   .hero__overlay {
     background: linear-gradient(
       180deg,
-      rgba(248, 244, 239, 0.9) 0%,
-      rgba(248, 244, 239, 0.75) 38%,
-      rgba(248, 244, 239, 0.25) 68%,
-      rgba(248, 244, 239, 0.08) 100%
+      rgba(248, 244, 239, 0.05) 0%,
+      rgba(248, 244, 239, 0.35) 100%
     );
   }
 
   .hero__content {
+    width: 100%;
     max-width: none;
-    padding-top: 2rem;
+    margin-top: -1.75rem;
+    padding: 2rem 5vw 2.75rem;
+    background: var(--cream);
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -8px 32px rgba(61, 53, 48, 0.06);
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero__title {
+    max-width: none;
+    font-size: clamp(2rem, 9vw, 2.6rem);
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;
+    max-width: none;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+  }
+
+  /* Secciones */
+  .about,
+  .services,
+  .gallery,
+  .location,
+  .cta {
+    padding: 3.5rem 0;
+  }
+
+  .about__grid {
+    gap: 2rem;
+  }
+
+  .about__visual {
+    aspect-ratio: 1;
+    max-height: 420px;
+    margin-inline: auto;
+    width: 100%;
+  }
+
+  .services__header {
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .services__header .section-intro {
+    margin-inline: 0;
+  }
+
+  .featured {
+    margin-bottom: 2.5rem;
+  }
+
+  .featured__title {
+    text-align: left;
+    font-size: 1.3rem;
+  }
+
+  .featured-card__body {
+    padding: 1.25rem;
+  }
+
+  .featured-card__name {
+    font-size: 1.2rem;
+  }
+
+  .featured-card .btn--whatsapp {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Tabs deslizables */
+  .category-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-inline: -5vw;
+    padding: 0.25rem 5vw 0.75rem;
+    gap: 0.45rem;
+  }
+
+  .category-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-tab {
+    flex-shrink: 0;
+    padding: 0.65rem 1rem;
+    font-size: 0.8rem;
+    min-height: 40px;
+  }
+
+  .service-row {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .service-row__info h4 {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .service-row__meta {
+    font-size: 0.8rem;
+  }
+
+  .service-row__action .btn--whatsapp {
+    min-height: 44px;
+    font-size: 0.85rem;
+  }
+
+  .gallery__header {
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+
+  .gallery__header .section-intro {
+    margin-inline: 0;
+  }
+
+  .gallery__grid {
+    gap: 0.5rem;
+  }
+
+  .location__details .section-title {
+    font-size: clamp(1.6rem, 6vw, 2rem);
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .cta .btn--whatsapp {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .footer {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+  }
+
+  .whatsapp-float {
+    bottom: calc(1rem + env(safe-area-inset-bottom));
+    right: calc(1rem + env(safe-area-inset-right));
+    width: 52px;
+    height: 52px;
+  }
+
+  .logo {
+    font-size: 1.15rem;
+  }
+
+  .logo span {
+    font-size: 0.58rem;
   }
 }
 
@@ -905,5 +1102,9 @@ ul {
 @media (min-width: 1024px) {
   .featured__grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero__content {
+    max-width: 55%;
   }
 }
