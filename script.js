@@ -179,7 +179,9 @@ function renderFeaturedCards() {
     .map((item) => {
       const img = item.imagen || serviceImages[item.nombre] || "images/spa-facial.png";
       const cat = categoryLabels[item.categoria] || item.categoria;
+      const desc = item.descripcion || "";
       const durationLabel = item.duracion === "combo" ? "Combo" : item.duracion;
+      const incluye = item.incluye ? `<p class="featured-card__includes">${item.incluye}</p>` : "";
 
       return `
         <article class="featured-card reveal">
@@ -187,11 +189,13 @@ function renderFeaturedCards() {
             <img src="${img}" alt="${item.nombre}" loading="lazy">
           </div>
           <div class="featured-card__body">
-            <div class="featured-card__main">
+            <div class="featured-card__top">
               <p class="featured-card__category">${cat}</p>
-              <h3 class="featured-card__name">${item.nombre}</h3>
               <span class="featured-card__duration">${durationLabel}</span>
             </div>
+            <h3 class="featured-card__name">${item.nombre}</h3>
+            <p class="featured-card__desc">${desc}</p>
+            ${incluye}
             <div class="featured-card__footer">
               <span class="featured-card__price">${formatPrice(item.precio)}</span>
               ${renderWhatsAppButton(item.nombre, item.duracion, true)}
