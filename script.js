@@ -97,12 +97,13 @@ const combos = [
 ];
 
 const categories = [
+  { id: "todos", label: "Todos" },
+  { id: "combos", label: "Combos" },
   { id: "belleza", label: "Belleza" },
   { id: "facial", label: "Facial" },
   { id: "corporal", label: "Corporal" },
   { id: "spa", label: "SPA" },
   { id: "otros", label: "Otros" },
-  { id: "combos", label: "Combos" },
 ];
 
 const categoryLabels = Object.fromEntries(categories.map((c) => [c.id, c.label]));
@@ -207,6 +208,45 @@ function renderFeaturedCards() {
     .join("");
 }
 
+function getCatalogItems(categoryId) {
+  if (categoryId === "todos") {
+    return [
+      ...combos.map((item) => ({ ...item, isCombo: true })),
+      ...services.map((item) => ({ ...item, isCombo: false })),
+    ];
+  }
+
+  if (categoryId === "combos") {
+    return combos.map((item) => ({ ...item, isCombo: true }));
+  }
+
+  return services
+    .filter((item) => item.categoria === categoryId)
+    .map((item) => ({ ...item, isCombo: false }));
+}
+
+function renderServiceCube(item) {
+  const durationLabel = item.duracion === "combo" ? "Combo" : item.duracion;
+  const includes = item.isCombo && item.incluye
+    ? `<p class="service-cube__includes">${item.incluye}</p>`
+    : "";
+
+  return `
+    <article class="service-cube reveal">
+      <div class="service-cube__head">
+        <span class="service-cube__cat">${categoryLabels[item.categoria] || item.categoria}</span>
+        <span class="service-cube__time">${durationLabel}</span>
+      </div>
+      <h4 class="service-cube__name">${item.nombre}</h4>
+      ${includes}
+      <div class="service-cube__foot">
+        <span class="service-cube__price">${formatPrice(item.precio)}</span>
+        ${renderWhatsAppButton(item.nombre, item.duracion, true)}
+      </div>
+    </article>
+  `;
+}
+
 function renderCategoryTabs() {
   const container = document.getElementById("category-tabs");
   if (!container) return;
@@ -214,7 +254,7 @@ function renderCategoryTabs() {
   container.innerHTML = categories
     .map(
       (cat, i) =>
-        `<button class="category-tab${i === 0 ? " active" : ""}" data-category="${cat.id}" type="button">${cat.label}</button>`
+        `<button class="category-tab${i === 0 ? " active" : ""}" data-category="${cat.id}" type="button" role="tab" aria-selected="${i === 0 ? "true" : "false"}">${cat.label}</button>`
     )
     .join("");
 }
@@ -225,50 +265,14 @@ function renderServicePanels() {
 
   container.innerHTML = categories
     .map((cat, i) => {
-      let rows = "";
+      const items = getCatalogItems(cat.id);
+      const cubes = items.map((item) => renderServiceCube(item)).join("");
 
-      if (cat.id === "combos") {
-        rows = combos
-          .map(
-            (combo) => `
-          <div class="service-row combo-row reveal">
-            <div class="service-row__info">
-              <h4>${combo.nombre}</h4>
-              <p class="service-row__includes">${combo.incluye}</p>
-            </div>
-            <div class="service-row__meta">
-              <span>${formatPrice(combo.precio)}</span>
-            </div>
-            <div class="service-row__action">
-              ${renderWhatsAppButton(combo.nombre, combo.duracion, true)}
-            </div>
-          </div>
-        `
-          )
-          .join("");
-      } else {
-        rows = services
-          .filter((s) => s.categoria === cat.id)
-          .map(
-            (s) => `
-          <div class="service-row reveal">
-            <div class="service-row__info">
-              <h4>${s.nombre}</h4>
-            </div>
-            <div class="service-row__meta">
-              <span>${s.duracion}</span>
-              <span>${formatPrice(s.precio)}</span>
-            </div>
-            <div class="service-row__action">
-              ${renderWhatsAppButton(s.nombre, s.duracion, true)}
-            </div>
-          </div>
-        `
-          )
-          .join("");
-      }
-
-      return `<div class="service-panel${i === 0 ? " active" : ""}" data-panel="${cat.id}">${rows ? `<div class="service-list">${rows}</div>` : ""}</div>`;
+      return `
+        <div class="service-panel${i === 0 ? " active" : ""}" data-panel="${cat.id}">
+          ${cubes ? `<div class="service-cubes">${cubes}</div>` : ""}
+        </div>
+      `;
     })
     .join("");
 }
@@ -296,8 +300,12 @@ function initCategoryTabs() {
     tab.addEventListener("click", () => {
       const category = tab.dataset.category;
 
-      tabs.forEach((t) => t.classList.remove("active"));
+      tabs.forEach((t) => {
+        t.classList.remove("active");
+        t.setAttribute("aria-selected", "false");
+      });
       tab.classList.add("active");
+      tab.setAttribute("aria-selected", "true");
 
       panels.forEach((panel) => {
         panel.classList.toggle("active", panel.dataset.panel === category);
@@ -306,11 +314,14 @@ function initCategoryTabs() {
       const activePanel = document.querySelector(`.service-panel[data-panel="${category}"]`);
       if (activePanel && typeof gsap !== "undefined") {
         gsap.fromTo(
-          activePanel.querySelectorAll(".service-row"),
+          activePanel.querySelectorAll(".service-cube"),
           { opacity: 0, y: 16 },
-          { opacity: 1, y: 0, duration: 0.4, stagger: 0.04, ease: "power2.out" }
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.03, ease: "power2.out" }
         );
       }
+
+      const cubes = activePanel?.querySelector(".service-cubes");
+      if (cubes) cubes.scrollLeft = 0;
     });
   });
 }
