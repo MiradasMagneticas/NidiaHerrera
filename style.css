@@ -382,25 +382,84 @@ ul {
 
 .about__visual {
   position: relative;
-  border-radius: var(--radius);
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-  box-shadow: var(--shadow-lg);
+  max-width: 420px;
+  margin-inline: auto;
+  padding: 1.25rem;
 }
 
-.about__visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.about__frame {
+  position: relative;
+  padding: 0.65rem;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #d4b896 0%, #c9a06a 35%, #e8d5b5 65%, #b8956a 100%);
+  box-shadow:
+    0 20px 50px rgba(61, 53, 48, 0.14),
+    0 0 0 1px rgba(196, 160, 106, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-.about__visual::after {
+.about__frame::before,
+.about__frame::after {
   content: "";
   position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--radius);
+  width: 28px;
+  height: 28px;
+  border-color: rgba(255, 255, 255, 0.75);
+  border-style: solid;
   pointer-events: none;
+  z-index: 2;
+}
+
+.about__frame::before {
+  top: 10px;
+  left: 10px;
+  border-width: 2px 0 0 2px;
+}
+
+.about__frame::after {
+  bottom: 10px;
+  right: 10px;
+  border-width: 0 2px 2px 0;
+}
+
+.about__frame-mat {
+  position: relative;
+  padding: 0.5rem;
+  background: var(--cream);
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(196, 135, 107, 0.2);
+}
+
+.about__frame-mat::before,
+.about__frame-mat::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-color: var(--terracotta);
+  border-style: solid;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.about__frame-mat::before {
+  top: 6px;
+  right: 6px;
+  border-width: 1px 1px 0 0;
+}
+
+.about__frame-mat::after {
+  bottom: 6px;
+  left: 6px;
+  border-width: 0 0 1px 1px;
+}
+
+.about__frame-mat img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 1px;
 }
 
 .about__text p + p {
@@ -1121,10 +1180,16 @@ ul {
   }
 
   .about__visual {
-    aspect-ratio: 1;
-    max-height: 420px;
-    margin-inline: auto;
-    width: 100%;
+    max-width: 360px;
+    padding: 0.85rem;
+  }
+
+  .about__frame {
+    padding: 0.5rem;
+  }
+
+  .about__frame-mat {
+    padding: 0.4rem;
   }
 
   .services {
@@ -1336,6 +1401,11 @@ ul {
 
   .about__grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .about__visual {
+    max-width: none;
+    margin-inline: 0;
   }
 
   .featured__grid {
